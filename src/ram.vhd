@@ -106,55 +106,6 @@ begin
         BoardOutput <= DataIn;
       end if;
 
-      -- handle I2CClient
-      if unsigned(AddrA) = 3 then
-        ReadA <= I2CClient;
-      else
-        case AddrA(15) is
-          when '1' =>
-            ReadA <= SReadA2;
-          when others => ReadA <= SReadA1;
-        end case;
-      end if;
-
-      if unsigned(AddrB) = 3 then
-        ReadB <= I2CClient;
-      else
-        case AddrB(15) is
-          when '1' =>
-            ReadB <= SReadB2;
-
-          when others => ReadB <= SReadB1;
-        end case;
-      end if;
-
-      -- handle I2CClient
-      if unsigned(AddrB) = 3 and WriteEnable = '1' then
-        I2CClient <= DataIn;
-      end if;
-
-      -- handle I2CServer
-      if unsigned(AddrA) = 4 then
-        ReadA <= I2CServer;
-      else
-        case AddrA(15) is
-          when '1' =>
-            ReadA <= SReadA2;
-          when others => ReadA <= SReadA1;
-        end case;
-      end if;
-
-      if unsigned(AddrB) = 4 then
-        ReadB <= I2CServer;
-      else
-        case AddrB(15) is
-          when '1' =>
-            ReadB <= SReadB2;
-
-          when others => ReadB <= SReadB1;
-        end case;
-      end if;
-
     end if;
   end process DirectIO;
 

@@ -23,7 +23,17 @@ architecture Implementation of I2C is
   signal Clk100k       : std_logic                     := '0';
   signal Clk100Counter : std_logic_vector(10 downto 0) := (others => '0');
   signal PackageReg    : std_logic_vector(11 downto 0) := (others => '0');
+  signal CpuAddress    : std_logic_vector(7 downto 0)  := (others => '0');
+  signal Message       : std_logic_vector(7 downto 0)  := (others => '0');
+  signal TargetAddress : std_logic_vector(7 downto 0)  := (others => '0');
+  signal Command       : std_logic_vector(7 downto 0)  := (others => '0');
 begin
+
+  -- Assign memory to sequences
+  CpuAddress    <= ClientR(7 downto 0);
+  Message       <= ClientR(15 downto 8);
+  TargetAddress <= ServerR(7 downto 0);
+  Command       <= ServerR(15 downto 8);
 
   ClkSplit100k : process(Clk)
   begin
@@ -36,5 +46,12 @@ begin
       end if;
     end if;
   end process ClkSplit100k;
+
+  ShiftRegister : process(Clk100k)
+  begin
+    if rising_edge(Clk) then
+      PackageReg <= SCL_In & PackageReg(11 downto 1);
+    end if;
+  end process ShiftRegister;
 
 end Implementation;
