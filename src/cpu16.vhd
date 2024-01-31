@@ -10,7 +10,7 @@ entity Cpu16 is
     Clk      : in    std_logic;
     Switches : in    std_logic_vector(15 downto 0);
     SDA      : inout std_logic;
-    SDL      : inout std_logic;
+    SCL      : inout std_logic;
     LED      : out   std_logic_vector(15 downto 0);
     RGB      : out   std_logic_vector(7 downto 0)
     );
@@ -122,11 +122,11 @@ begin
     port map(
       Clk     => Clk,
       SDA_In  => SDA,
-      SDL_In  => SDL,
+      SCL_In  => SCL,
       ClientR => I2CClient,
       ServerR => I2CServer,
       SDA_Out => SDA,
-      SDL_Out => SDL,
+      SCL_Out => SCL,
       ClientW => I2CClientOut
       );
 

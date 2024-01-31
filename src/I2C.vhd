@@ -10,17 +10,31 @@ entity I2C is
   port (
     Clk     : in  std_logic;
     SDA_In  : in  std_logic;
-    SDL_In  : in  std_logic;
+    SCL_In  : in  std_logic;
     ClientR : in  std_logic_vector(15 downto 0);
     ServerR : in  std_logic_vector(15 downto 0);
     SDA_Out : out std_logic;
-    SDL_Out : out std_logic;
+    SCL_Out : out std_logic;
     ClientW : out std_logic_vector(15 downto 0)
     );
 end I2C;
 
 architecture Implementation of I2C is
+  Clk100k       : std_logic                     := '0';
+  Clk100Counter : std_logic_vector(10 downto 0) := (others => '0');
 
 begin
+
+  ClkSplit100k : process(clk)
+  begin
+    if rising_edge(clk) then
+      if unsigned(Clk100Counter) >= 500 then
+        Clk100Counter <= (others => '0');
+        Clk100k       <= not Clk100k;
+      else
+        Clk100Counter <= std_logic_vector(unsigned(Clk100Counter) + 1);
+      end if;
+    end if;
+  end process ClkSplit100k;
 
 end Implementation;
