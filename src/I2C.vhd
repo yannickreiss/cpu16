@@ -20,8 +20,8 @@ entity I2C is
 end I2C;
 
 architecture Implementation of I2C is
-  Clk100k       : std_logic                     := '0';
-  Clk100Counter : std_logic_vector(10 downto 0) := (others => '0');
+  signal Clk100k       : std_logic                     := '0';
+  signal Clk100Counter : std_logic_vector(10 downto 0) := (others => '0');
 
 begin
 
