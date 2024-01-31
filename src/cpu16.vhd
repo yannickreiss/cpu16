@@ -45,6 +45,7 @@ architecture Implementation of Cpu16 is
   signal PcEnable            : std_logic                     := '0';
   signal Jump                : std_logic                     := '0';
   signal I2CClient           : std_logic_vector(15 downto 0) := (others => '0');
+  signal I2CClientOut        : std_logic_vector(15 downto 0) := (others => '0');
   signal I2CServer           : std_logic_vector(15 downto 0) := (others => '0');
 begin
 
@@ -125,8 +126,8 @@ begin
       ClientR => I2CClient,
       ServerR => I2CServer,
       SDA_Out => SDA,
-      SDL_Out => SDA,
-      ClientW => I2CClient
+      SDL_Out => SDL,
+      ClientW => I2CClientOut
       );
 
   AluSetInput : process(ImmediateValue, InstructionCounter, RegisterDataOut1,
