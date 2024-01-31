@@ -22,12 +22,12 @@ end I2C;
 architecture Implementation of I2C is
   signal Clk100k       : std_logic                     := '0';
   signal Clk100Counter : std_logic_vector(10 downto 0) := (others => '0');
-
+  signal PackageReg    : std_logic_vector(11 downto 0) := (others => '0');
 begin
 
-  ClkSplit100k : process(clk)
+  ClkSplit100k : process(Clk)
   begin
-    if rising_edge(clk) then
+    if rising_edge(Clk) then
       if unsigned(Clk100Counter) >= 500 then
         Clk100Counter <= (others => '0');
         Clk100k       <= not Clk100k;
