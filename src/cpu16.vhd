@@ -61,7 +61,7 @@ begin
       ReadB        => RamReadB,
       DirectIn     => Switches,
       DirectOut    => LED,
-      I2CClientIn  => I2CClient,
+      I2CClientIn  => I2CClientOut,
       I2CClientOut => I2CClient,
       I2CServerOut => I2CServer
       );
