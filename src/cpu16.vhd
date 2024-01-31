@@ -44,20 +44,25 @@ architecture Implementation of Cpu16 is
   signal ImmediateValue      : std_logic_vector(15 downto 0) := (others => '0');
   signal PcEnable            : std_logic                     := '0';
   signal Jump                : std_logic                     := '0';
+  signal I2CClient           : std_logic_vector(15 downto 0) := (others => '0');
+  signal I2CServer           : std_logic_vector(15 downto 0) := (others => '0');
 begin
 
   -- Include Entities
   Ramblock : entity work.Ram(Behavioral)
     port map(
-      Clk         => Clk,
-      AddrA       => RamAddrA,
-      AddrB       => RamAddrB,
-      WriteEnable => RamWriteEnable,
-      DataIn      => RamDataWrite,
-      ReadA       => RamReadA,
-      ReadB       => RamReadB,
-      DirectIn    => Switches,
-      DirectOut   => LED
+      Clk          => Clk,
+      AddrA        => RamAddrA,
+      AddrB        => RamAddrB,
+      WriteEnable  => RamWriteEnable,
+      DataIn       => RamDataWrite,
+      ReadA        => RamReadA,
+      ReadB        => RamReadB,
+      DirectIn     => Switches,
+      DirectOut    => LED,
+      I2CClientIn  => I2CClient,
+      I2CClientOut => I2CClient,
+      I2CServerOut => I2CServer
       );
 
   Alu : entity work.Alu(Implementation)
