@@ -117,6 +117,18 @@ begin
       Addr     => InstructionCounter
       );
 
+  I2C_Adapter : entity work.I2C(Implementation)
+    port map(
+      Clk     => Clk,
+      SDA_In  => SDA,
+      SDL_In  => SDL,
+      ClientR => I2CClient,
+      ServerR => I2CServer,
+      SDA_Out => SDA,
+      SDL_Out => SDA,
+      ClientW => I2CClient
+      );
+
   AluSetInput : process(ImmediateValue, InstructionCounter, RegisterDataOut1,
                         RegisterDataOut2)
   begin
