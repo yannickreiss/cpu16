@@ -47,6 +47,8 @@ architecture Implementation of Cpu16 is
   signal I2CClient           : std_logic_vector(15 downto 0) := (others => '0');
   signal I2CClientOut        : std_logic_vector(15 downto 0) := (others => '0');
   signal I2CServer           : std_logic_vector(15 downto 0) := (others => '0');
+  signal PcAddrCalc          : std_logic_vector(15 downto 0) := (others => '0');
+  signal BranchEnable        : std_logic                     := '0';
 begin
 
   -- Include Entities
@@ -96,11 +98,12 @@ begin
 
   Decoder : entity work.Decoder(Implementation)
     port map(
-      Instruction => RawInstruction,
-      AluOpcd     => AluOpcode,
-      RegOp1      => RegisterRegister1,
-      RegOp2      => RegisterRegister2,
-      RegWrite    => RegisterRegisterW
+      Instruction  => RawInstruction,
+      AluOpcd      => AluOpcode,
+      RegOp1       => RegisterRegister1,
+      RegOp2       => RegisterRegister2,
+      RegWrite     => RegisterRegisterW,
+      BranchEnable => BranchEnable
       );
 
   ImmUseless : entity work.Immediate(Implementation)
@@ -113,7 +116,7 @@ begin
     port map(
       Clk      => Clk,
       PcEnable => PcEnable,
-      AddrCalc => AluResult,
+      AddrCalc => PcAddrCalc,
       Jump     => Jump,
       Addr     => InstructionCounter
       );
@@ -130,6 +133,16 @@ begin
       ClientW => I2CClientOut
       );
 
+  BranchEnabler : entity work.Branch(Implementation)
+    port map(
+      BranchEnable => BranchEnable,
+      AluResult    => AluResult,
+      PC           => InstructionCounter,
+      PMNext       => NextInstruction,
+      JumpSuggest  => Jump,
+      PCCalc       => PcAddrCalc
+      );
+
   AluSetInput : process(ImmediateValue, InstructionCounter, RegisterDataOut1,
                         RegisterDataOut2)
   begin
@@ -141,8 +154,6 @@ begin
                               AluIn2 <= ImmediateValue;
       when others => AluIn1 <= InstructionCounter;
                      AluIn2 <= RegisterDataOut2;
-
-
     end case;
   end process AluSetInput;
 

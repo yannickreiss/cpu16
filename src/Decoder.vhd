@@ -9,11 +9,12 @@ use IEEE.numeric_std.all;
 -- Entity decode: Decoder currently supporting read operations
 entity Decoder is
   port(
-    Instruction : in  std_logic_vector(15 downto 0);  -- Instruction from instruction memory
-    AluOpcd     : out std_logic_vector(3 downto 0);  -- alu opcode
-    RegOp1      : out std_logic_vector(3 downto 0);  -- Rj: first register to read
-    RegOp2      : out std_logic_vector(3 downto 0);  -- Rk: second register to read
-    RegWrite    : out std_logic_vector(3 downto 0)  -- Ri: the register to write to
+    Instruction  : in  std_logic_vector(15 downto 0);  -- Instruction from instruction memory
+    AluOpcd      : out std_logic_vector(3 downto 0);  -- alu opcode
+    RegOp1       : out std_logic_vector(3 downto 0);  -- Rj: first register to read
+    RegOp2       : out std_logic_vector(3 downto 0);  -- Rk: second register to read
+    RegWrite     : out std_logic_vector(3 downto 0);  -- Ri: the register to write to
+    BranchEnable : out std_logic
     );
 end Decoder;
 
@@ -34,8 +35,15 @@ begin
     case Instruction(3 downto 0) is
       when "0000" | "0010" | "0011" | "0100" | "0101" | "0110" | "0111" | "1000" | "1010" => AluOpcd <= Instruction(3 downto 0);  -- R-Types
       when "0001" | "1001"                                                                => AluOpcd <= Instruction(7 downto 4);  -- S-Types
-      when "1110"                                                                         => AluOpcd <= Instruction(7 downto 4);  -- B-Types (to be debated)
+      when "1110"                                                                         => AluOpcd <= Instruction(15 downto 12);  -- B-Types (to be debated)
       when others                                                                         => AluOpcd <= "1111";  -- if unsure, do nothing
+    end case;
+
+    -- BranchEnable
+    case Instruction(3 downto 0) is
+      when "0001" | "1001" | "0100" | "1100" | "0101" | "1101" =>
+        BranchEnable <= '1';
+      when others => BranchEnable <= '0';
     end case;
   end process Decode;
 
