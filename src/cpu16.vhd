@@ -49,6 +49,8 @@ architecture Implementation of Cpu16 is
   signal I2CServer           : std_logic_vector(15 downto 0) := (others => '0');
   signal PcAddrCalc          : std_logic_vector(15 downto 0) := (others => '0');
   signal BranchEnable        : std_logic                     := '0';
+  signal JumpEnable          : std_logic                     := '0';
+  signal State               : std_logic_vector(2 downto 0)  := (others => '0');
 begin
 
   -- Include Entities
@@ -117,7 +119,7 @@ begin
       Clk      => Clk,
       PcEnable => PcEnable,
       AddrCalc => PcAddrCalc,
-      Jump     => Jump,
+      Jump     => JumpEnable,
       Addr     => InstructionCounter
       );
 
@@ -141,6 +143,18 @@ begin
       PMNext       => NextInstruction,
       JumpSuggest  => Jump,
       PCCalc       => PcAddrCalc
+      );
+
+  ControlHandler : entity work.Control(Implementation)
+    port map(
+      Clk         => Clk,
+      Instruction => RawInstruction,
+      JumpSuggest => Jump,
+      EnablePC    => PcEnable,
+      EnableRam   => RamWriteEnable,
+      EnableRegs  => RegisterWriteEnable,
+      EnableJump  => JumpEnable,
+      StateOut    => State
       );
 
   AluSetInput : process(ImmediateValue, InstructionCounter, RegisterDataOut1,

@@ -34,7 +34,7 @@ begin
     end if;
   end process UpdatePc;
 
-  AddressPlus <= (std_logic_vector(to_unsigned(to_integer(unsigned(Address)) + 1, 16)));
+  AddressPlus <= (std_logic_vector(to_unsigned(to_integer(unsigned(Address)) + 2, 16)));
   Addr        <= Address;
 
 end Implementation;
