@@ -21,7 +21,8 @@ entity Control is
 end Control;
 
 architecture Implementation of Control is
-  signal State : std_logic_vector(2 downto 0) := (others => '0');
+  signal State     : std_logic_vector(2 downto 0) := (others => '0');
+  signal CouldJump : std_logic                    := '0';
 begin
 
   StateInterator : process(Clk)
@@ -48,29 +49,30 @@ begin
         case Instruction(3 downto 0) is
           when "0000" | "0001" | "0010" | "0011" | "0100" | "0101" | "0110" | "0111" | "1000" | "1001" | "1010" | "1011" =>
             EnableRam  <= '0';
-            EnableJump <= '0';
+            CouldJump  <= '0';
             EnableRegs <= '1';
           when "1100" =>
             EnableRam  <= '1';
-            EnableJump <= '0';
+            CouldJump  <= '0';
             EnableRegs <= '0';
-           when "1110" =>
+          when "1110" =>
             EnableRam  <= '0';
-            EnableJump <= '1';
+            CouldJump  <= '1';
             EnableRegs <= '0';
           when others =>
             EnableRam  <= '0';
-            EnableJump <= '0';
+            CouldJump  <= '0';
             EnableRegs <= '0';
         end case;
       when others =>
         EnablePC   <= '0';
         EnableRam  <= '0';
-        EnableJump <= '0';
+        CouldJump  <= '0';
         EnableRegs <= '0';
     end case;
   end process SetEnableSignals;
 
+  EnableJump <= CouldJump and JumpSuggest;
 
   StateOut <= State;
 
