@@ -7,7 +7,6 @@ use IEEE.std_logic_1164.all;
 
 -- TODO: Check I Type; Implement Load instructions
 -- TODO: Connect Register Data in
--- TODO: Add RAM data and address input
 -- TODO: Connect I2C
 -- TODO: Add peripheral Memory block
 
@@ -18,7 +17,8 @@ entity Cpu16 is
     SDA      : inout std_logic;
     SCL      : inout std_logic;
     LED      : out   std_logic_vector(15 downto 0);
-    RGB      : out   std_logic_vector(7 downto 0)
+    RGB      : out   std_logic_vector(5 downto 0);
+    seg      : out   std_logic_vector(6 downto 0)
     );
 end Cpu16;
 
@@ -64,10 +64,10 @@ begin
   Ramblock : entity work.Ram(Behavioral)
     port map(
       Clk          => Clk,
-      AddrA        => RamAddrA,
-      AddrB        => RamAddrB,
+      AddrA        => AluResult,
+      AddrB        => AluResult,
       WriteEnable  => RamWriteEnable,
-      DataIn       => RamDataWrite,
+      DataIn       => RegisterDataOut2,
       ReadA        => RamReadA,
       ReadB        => RamReadB,
       DirectIn     => Switches,
@@ -166,7 +166,8 @@ begin
       StateOut    => State
       );
 
-  AluSetInput : process(ImmediateValue, InstructionCounter, RegisterDataOut1,
+  AluSetInput : process(ImmediateValue, InstructionCounter,
+                        RawInstruction(3 downto 0), RegisterDataOut1,
                         RegisterDataOut2)
   begin
 
@@ -180,6 +181,24 @@ begin
     end case;
   end process AluSetInput;
 
-  RGB <= Switches(7 downto 0);
+  RegisterSetInput : process(AluResult, RamReadB, RawInstruction(3 downto 0),
+                             RawInstruction(7 downto 5))
+  begin
+    case RawInstruction(3 downto 0) is
+      when "0000" | "0010" | "0011" | "0100" | "0101" | "0110" | "0111" | "1000" | "1010" | "1011" => RegisterDataIn <= AluResult;
+      when "0001" | "1001" =>
+        if RawInstruction(7 downto 5) = "001" then
+          -- Those are Load instructions
+          RegisterDataIn <= RamReadB;
+        else
+          RegisterDataIn <= AluResult;
+        end if;
+      when others => RegisterDataIn <= (others => '0');
+    end case;
+  end process RegisterSetInput;
+
+
+  RGB <= State & State;
+  Seg <= AluResult(12 downto 6);
 
 end Implementation;
