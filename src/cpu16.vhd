@@ -5,6 +5,12 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
+-- TODO: Check I Type; Implement Load instructions
+-- TODO: Connect Register Data in
+-- TODO: Add RAM data and address input
+-- TODO: Connect I2C
+-- TODO: Add peripheral Memory block
+
 entity Cpu16 is
   port (
     Clk      : in    std_logic;
@@ -51,6 +57,7 @@ architecture Implementation of Cpu16 is
   signal BranchEnable        : std_logic                     := '0';
   signal JumpEnable          : std_logic                     := '0';
   signal State               : std_logic_vector(2 downto 0)  := (others => '0');
+  signal UnconditionalJumpOp : std_logic                     := '0';
 begin
 
   -- Include Entities
@@ -105,7 +112,8 @@ begin
       RegOp1       => RegisterRegister1,
       RegOp2       => RegisterRegister2,
       RegWrite     => RegisterRegisterW,
-      BranchEnable => BranchEnable
+      BranchEnable => BranchEnable,
+      UncondJump   => UnconditionalJumpOp
       );
 
   ImmUseless : entity work.Immediate(Implementation)
@@ -141,6 +149,7 @@ begin
       AluResult    => AluResult,
       PC           => InstructionCounter,
       PMNext       => NextInstruction,
+      UncondJump   => UnconditionalJumpOp,
       JumpSuggest  => Jump,
       PCCalc       => PcAddrCalc
       );
@@ -170,7 +179,6 @@ begin
                      AluIn2 <= RegisterDataOut2;
     end case;
   end process AluSetInput;
-
 
   RGB <= Switches(7 downto 0);
 

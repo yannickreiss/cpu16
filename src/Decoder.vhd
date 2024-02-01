@@ -14,7 +14,8 @@ entity Decoder is
     RegOp1       : out std_logic_vector(3 downto 0);  -- Rj: first register to read
     RegOp2       : out std_logic_vector(3 downto 0);  -- Rk: second register to read
     RegWrite     : out std_logic_vector(3 downto 0);  -- Ri: the register to write to
-    BranchEnable : out std_logic
+    BranchEnable : out std_logic;
+    UncondJump   : out std_logic
     );
 end Decoder;
 
@@ -39,12 +40,13 @@ begin
       when others                                                                         => AluOpcd <= "1111";  -- if unsure, do nothing
     end case;
 
-    -- BranchEnable
-    case Instruction(3 downto 0) is
-      when "0001" | "1001" | "0100" | "1100" | "0101" | "1101" =>
-        BranchEnable <= '1';
-      when others => BranchEnable <= '0';
+    -- BranchEnable / unconditionaljumpop
+    case Instruction(5 downto 0) is
+      when "001110" | "101110" => BranchEnable <= '1';
+      when "011110" | "111110" => UncondJump   <= '1';
+      when others              => BranchEnable <= '0';
     end case;
+
   end process Decode;
 
 end Implementation;

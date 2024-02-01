@@ -12,6 +12,7 @@ entity Branch is
     AluResult    : in  std_logic_vector(15 downto 0);
     PC           : in  std_logic_vector(15 downto 0);
     PMNext       : in  std_logic_vector(15 downto 0);
+    UncondJump   : in  std_logic;
     JumpSuggest  : out std_logic;
     PCCalc       : out std_logic_vector(15 downto 0)
     );
@@ -22,6 +23,6 @@ architecture Implementation of Branch is
 begin
 
   PCCalc      <= std_logic_vector(signed(PC) + signed(PMNext));
-  JumpSuggest <= BranchEnable and AluResult(0);
+  JumpSuggest <= (BranchEnable and AluResult(0)) or UncondJump;
 
 end Implementation;
